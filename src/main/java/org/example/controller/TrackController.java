@@ -1,22 +1,19 @@
 package org.example.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.example.entity.Track;
 import org.example.service.TrackService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/tracks")
 public class TrackController {
-    private final TrackService trackService;
 
-    @Autowired
-    public TrackController(TrackService trackService) {
-        this.trackService = trackService;
-    }
+    private final TrackService trackService;
 
     @GetMapping
     public List<Track> getAllTracks() {
