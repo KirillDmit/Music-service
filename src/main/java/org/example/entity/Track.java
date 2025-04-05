@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
 @Entity
 @Table(name = "tracks")
@@ -27,4 +28,7 @@ public class Track {
     private BigDecimal rating;
     private int releaseYear;
     private int durationSeconds;
+
+    @OneToMany(mappedBy = "track", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Review> reviews;
 }
