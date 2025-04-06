@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,6 +19,26 @@ public class TrackController {
     @GetMapping
     public List<Track> getAllTracks() {
         return trackService.getAllTracks();
+    }
+
+    @GetMapping("/search")
+    public List<Track> search(@RequestParam(required = false) String title,
+                              @RequestParam(required = false) String artist,
+                              @RequestParam(required = false) String genre) {
+        if (Objects.nonNull(title))
+            return trackService.searchByTitle(title);
+        if (Objects.nonNull(artist))
+            return trackService.searchByArtist(artist);
+        if (Objects.nonNull(genre))
+            return trackService.searchByGenre(genre);
+        return List.of();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Track> getTrackById(@PathVariable Long id) {
+        return trackService.getById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
