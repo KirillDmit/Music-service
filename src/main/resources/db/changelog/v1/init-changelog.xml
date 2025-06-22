@@ -1,0 +1,210 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet id="create-track" author="Vaganov.VS">
+        <createTable tableName="t_track">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="title" type="VARCHAR(255)"/>
+            <column name="artist" type="VARCHAR(255)"/>
+            <column name="album" type="VARCHAR(255)"/>
+            <column name="genre" type="VARCHAR(100)"/>
+            <column name="rating" type="NUMERIC(3,2)"/>
+            <column name="release_year" type="INTEGER"/>
+            <column name="duration_seconds" type="INTEGER"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create-user" author="Vaganov.VS">
+        <createTable tableName="t_user">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="username" type="VARCHAR(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="password" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="registered_at" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+
+    <changeSet id="create-author" author="Vaganov.VS">
+        <createTable tableName="t_author" remarks="Authors table">
+            <column name="id" type="UUID" >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex tableName="t_author" indexName="idx_author_name">
+            <column name="name"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="create_playlist_table" author="Vaganov.VS">
+        <createTable tableName="t_playlist" remarks="Playlists table">
+            <column name="id" type="UUID" >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="link_user" type="UUID">
+                <constraints nullable="false" foreignKeyName="fk_playlist_user"
+                             referencedTableName="t_user" referencedColumnNames="id"/>
+            </column>
+
+            <column name="playlist_type" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex tableName="t_playlist" indexName="idx_playlist_user">
+            <column name="link_user"/>
+        </createIndex>
+
+        <createIndex tableName="t_playlist" indexName="idx_playlist_name">
+            <column name="name"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="create_review_table" author="Vaganov.VS">
+        <createTable tableName="t_review" remarks="Track reviews table">
+            <column name="id" type="UUID" >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="text" type="TEXT">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="score" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="is_hidden" type="BOOLEAN" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="link_track" type="UUID">
+                <constraints nullable="false"
+                             foreignKeyName="fk_review_track"
+                             referencedTableName="t_track"
+                             referencedColumnNames="id"/>
+            </column>
+
+            <column name="link_user" type="UUID">
+                <constraints nullable="false"
+                             foreignKeyName="fk_review_user"
+                             referencedTableName="t_user"
+                             referencedColumnNames="id"/>
+            </column>
+        </createTable>
+
+        <createIndex tableName="t_review" indexName="idx_review_track">
+            <column name="link_track"/>
+        </createIndex>
+
+        <createIndex tableName="t_review" indexName="idx_review_user">
+            <column name="link_user"/>
+        </createIndex>
+
+        <createIndex tableName="t_review" indexName="idx_review_track_hidden">
+            <column name="link_track"/>
+            <column name="is_hidden"/>
+        </createIndex>
+    </changeSet>
+
+
+    <changeSet id="create_track_author_table" author="Vaganov.VS">
+        <createTable tableName="t_track_autor" remarks="Association table between tracks and authors in playlists">
+            <column name="id" type="UUID" >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="link_track" type="UUID">
+                <constraints nullable="false"
+                             foreignKeyName="fk_track_author_track"
+                             referencedTableName="t_track"
+                             referencedColumnNames="id"/>
+            </column>
+
+            <column name="link_author" type="UUID">
+                <constraints nullable="false"
+                             foreignKeyName="fk_track_author_author"
+                             referencedTableName="t_author"
+                             referencedColumnNames="id"/>
+            </column>
+        </createTable>
+
+        <createIndex tableName="t_track_autor" indexName="idx_track_author_track">
+            <column name="link_track"/>
+        </createIndex>
+
+        <createIndex tableName="t_track_autor" indexName="idx_track_author_author">
+            <column name="link_author"/>
+        </createIndex>
+    </changeSet>
+
+
+    <changeSet id="create_track_playlist_table" author="Vaganov.VS">
+        <createTable tableName="t_track_playlist" remarks="Association table between tracks and playlists with position">
+            <column name="id" type="UUID" >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="link_track" type="UUID">
+                <constraints nullable="false"
+                             foreignKeyName="fk_track_playlist_track"
+                             referencedTableName="t_track"
+                             referencedColumnNames="id"/>
+            </column>
+
+            <column name="link_playlist" type="UUID">
+                <constraints nullable="false"
+                             foreignKeyName="fk_track_playlist_playlist"
+                             referencedTableName="t_playlist"
+                             referencedColumnNames="id"/>
+            </column>
+
+            <column name="position" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex tableName="t_track_playlist" indexName="idx_track_playlist_track">
+            <column name="link_track"/>
+        </createIndex>
+
+        <createIndex tableName="t_track_playlist" indexName="idx_track_playlist_playlist">
+            <column name="link_playlist"/>
+        </createIndex>
+
+        <addUniqueConstraint
+                tableName="t_track_playlist"
+                columnNames="link_playlist, link_track"
+                constraintName="uc_track_playlist_association"/>
+
+        <createIndex tableName="t_track_playlist" indexName="idx_track_playlist_position">
+            <column name="link_playlist"/>
+            <column name="position"/>
+        </createIndex>
+    </changeSet>
+    
+</databaseChangeLog>

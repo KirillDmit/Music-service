@@ -4,9 +4,10 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Entity
-@Table(name = "tracks")
+@Table(name = "t_track")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -14,17 +15,20 @@ import java.math.BigDecimal;
 public class Track {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private UUID id;
 
-    @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
     private String artist;
 
     private String album;
+
     private String genre;
+
     private BigDecimal rating;
+
     private int releaseYear;
+
     private int durationSeconds;
+
 }
